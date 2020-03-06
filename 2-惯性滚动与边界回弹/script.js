@@ -85,14 +85,16 @@
         if (!isSingleTouch(e) || lastTime === currentTime) {
             return;
         }
+        inertialRolling();
+    });
 
+    function inertialRolling() {
         let deltaX = currentPoint.x - lastPoint.x;
         let deltaY = currentPoint.y - lastPoint.y;
         let deltaD = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
         scrollVelocity = deltaD / ((currentTime - lastTime) / 1000);
         let cos = deltaX / deltaD;
         let sin = deltaY / deltaD;
-
         timer = setInterval(() => {
             let v = scrollVelocity - a;
 
@@ -110,7 +112,7 @@
             scrollTop += sin * d;
             scrollTo(scrollLeft, scrollTop);
         }, t * 1000);
-    });
+    }
 
     function scrollTo(scrollLeft, scrollTop) {
         myScroll.style.transform = `translate3d(${scrollLeft}px, ${scrollTop}px, 0)`;
