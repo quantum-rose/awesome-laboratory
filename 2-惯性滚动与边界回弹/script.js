@@ -41,7 +41,7 @@
      */
     let a = 40, // 滚动时的加速度，总是与滚动方向相反，单位px/(s^2)
         throttle = 1000 / 60, // 节流延迟时间，用于控制touchmove事件的触发频率，单位ms
-        momentumLimitTime = 125, // 符合惯性拖动的最大时间，单位ms
+        momentumLimitTime = 300, // 符合惯性拖动的最大时间，单位ms
         momentumLimitDistance = 15; // 符合惯性拖动的最小拖动距离，单位px
 
     /**

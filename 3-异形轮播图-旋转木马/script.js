@@ -49,12 +49,12 @@
         unitDeg = 0.5, // touchemove事件中，手指每移动1px，swiperItem转过的角度，单位deg
         sillTouchmoveSpeed = 800, // 滑动swiper的速度阈值，单位px/s，超过这个值时手指离开屏幕后swiper自动滑动到下一个swiperItem
         swiperInitCallback = function(item, index, array) {
-            item.elem.style.backgroundImage = `linear-gradient(to bottom, ${item.style.backgroundColor}, transparent 50%)`;
+            item.elem.style.backgroundImage = `linear-gradient(to bottom, ${item.style.backgroundColor} 0%, transparent 50%)`;
         },
         animateSwiperCallback = function(item, index, array) {
             if (item.isCurrent) {
                 let bgc = item.style.backgroundColor;
-                document.body.style.backgroundImage = `linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 0% 100%), linear-gradient(to bottom, ${bgc}, white, ${bgc})`;
+                document.body.style.backgroundImage = `linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.4) 100%), linear-gradient(to bottom, ${bgc}, white, ${bgc})`;
             }
         };
 
