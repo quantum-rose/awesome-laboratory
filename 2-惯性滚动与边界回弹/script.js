@@ -39,14 +39,18 @@
     /**
      * config 自定义配置
      */
-    let a = 50, // 滚动时的加速度，总是与滚动方向相反，单位px/(s^2)
-        throttle = 1000 / 60; // 节流延迟时间，用于控制touchmove事件的触发频率，单位ms
+    let a = 40, // 滚动时的加速度，总是与滚动方向相反，单位px/(s^2)
+        throttle = 1000 / 60, // 节流延迟时间，用于控制touchmove事件的触发频率，单位ms
+        momentumLimitTime = 125, // 符合惯性拖动的最大时间，单位ms
+        momentumLimitDistance = 15; // 符合惯性拖动的最小拖动距离，单位px
 
     /**
      * 程序运行所必要的数据
      */
     let myScroll = document.querySelector('.my-scroll'),
         touchIdentifier = null, // touch事件中触点的唯一标识，用于禁用多点触控
+        touchstartTime = 0, // 触摸开始的时间
+        touchstartPoint = null, // 触摸开始的触点
         lastPoint = null, // 上一次的触点
         currentPoint = null, // 当前触点
         lastTime = 0, // 上一个触点的时间戳
@@ -62,8 +66,8 @@
         }
         isScrolling = false;
 
-        lastPoint = currentPoint = e.targetTouches[0];
-        lastTime = currentTime = Date.now();
+        touchstartPoint = lastPoint = currentPoint = e.targetTouches[0];
+        touchstartTime = lastTime = currentTime = Date.now();
     });
 
     /**
@@ -90,26 +94,35 @@
      * touchend
      */
     myScroll.addEventListener('touchend', function(e) {
-        if (!isSingleTouch(e) || lastTime === currentTime) {
+        if (
+            !isSingleTouch(e) ||
+            Math.sqrt(
+                (e.changedTouches[0].pageX - touchstartPoint.pageX) *
+                    (e.changedTouches[0].pageX - touchstartPoint.pageX) +
+                    (e.changedTouches[0].pageY - touchstartPoint.pageY) *
+                        (e.changedTouches[0].pageY - touchstartPoint.pageY)
+            ) < momentumLimitDistance ||
+            Date.now() - touchstartTime > momentumLimitTime
+        ) {
             return;
         }
         let deltaX = currentPoint.pageX - lastPoint.pageX,
             deltaY = currentPoint.pageY - lastPoint.pageY,
-            deltaD = Math.sqrt(deltaX * deltaX + deltaY * deltaY),
-            cos = deltaX / deltaD,
-            sin = deltaY / deltaD,
-            scrollVelocity = deltaD / ((currentTime - lastTime) / 1000);
+            deltaDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY),
+            cos = deltaX / deltaDistance,
+            sin = deltaY / deltaDistance;
+
+        scrollVelocity = deltaDistance / ((currentTime - lastTime) / 1000);
         isScrolling = true;
-        inertialRolling(cos, sin, scrollVelocity);
+        momentumRolling(cos, sin);
     });
 
     /**
      * 惯性滚动动画
      * @param {Number} cos 滑动方向与x轴正方向夹角的余弦
      * @param {Number} sin 滑动方向与x轴正方向夹角的正弦
-     * @param {Number} scrollVelocity 滚动速度，标量，单位px/s
      */
-    function inertialRolling(cos, sin, scrollVelocity) {
+    function momentumRolling(cos, sin) {
         if (!isScrolling) {
             return;
         }
@@ -133,7 +146,7 @@
         scrollTop += sin * d;
         scrollTo(scrollLeft, scrollTop);
 
-        requestAnimationFrame(inertialRolling.bind(this, cos, sin, scrollVelocity));
+        requestAnimationFrame(momentumRolling.bind(this, cos, sin));
     }
 
     /**
