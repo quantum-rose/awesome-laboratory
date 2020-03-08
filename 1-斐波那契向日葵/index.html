@@ -2,38 +2,37 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        />
         <meta http-equiv="X-UA-Compatible" content="ie=edge" />
         <title>斐波那契向日葵</title>
         <style>
-            * {
-                margin: 0;
-                padding: 0;
-                vertical-align: middle;
-            }
-
-            canvas {
-                width: 1920px;
-                height: 1080px;
+            html,
+            body {
+                height: 100%;
+                overflow: hidden;
+                background-position: center;
+                background-size: cover;
+                background-repeat: no-repeat;
             }
         </style>
     </head>
 
     <body>
-        <canvas id="Fibonacci"></canvas>
-
         <script>
             const CANVAS_WIDTH = 4096;
-            const CANVAS_HEIGHT = (CANVAS_WIDTH / 16) * 9;
+            const CANVAS_HEIGHT = CANVAS_WIDTH;
             const GOLDEN_ANGLE = (1 - (Math.sqrt(5) - 1) / 2) * 2 * Math.PI;
-            let canvas = document.getElementById('Fibonacci');
+            const canvas = document.createElement('canvas');
             canvas.width = CANVAS_WIDTH;
             canvas.height = CANVAS_HEIGHT;
-            let origin = {
+            const origin = {
                 x: CANVAS_WIDTH >> 1,
                 y: CANVAS_HEIGHT >> 1
             };
-            let cvsCtx = canvas.getContext('2d');
+            const cvsCtx = canvas.getContext('2d');
             cvsCtx.rect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
             cvsCtx.fillStyle = '#000000';
             cvsCtx.fill();
@@ -44,7 +43,7 @@
             // }
 
             /* 仿向日葵图形，每两个圆的极角差为黄金分割角，且半径逐渐增大 */
-            for (let i = 0; i < 2400; i++) {
+            for (let i = 0; i < 2908; i++) {
                 drawCircle(i * GOLDEN_ANGLE, i, 1 + i * 0.02);
             }
 
@@ -56,6 +55,8 @@
                 cvsCtx.fillStyle = '#333333';
                 cvsCtx.fill();
             }
+
+            document.body.style.backgroundImage = `url('${canvas.toDataURL()}')`;
         </script>
     </body>
 </html>
