@@ -45,6 +45,7 @@
             }
         ],
         swiperTransitionDuration = 0.3, // swiper动画的持续时间，单位s
+        throttle = 1000 / 60, // 节流延迟时间，用于控制touchmove事件的触发频率，单位ms
         unitDeg = 0.5, // touchemove事件中，手指每移动1px，swiperItem转过的角度，单位deg
         sillTouchmoveSpeed = 800, // 滑动swiper的速度阈值，单位px/s，超过这个值时手指离开屏幕后swiper自动滑动到下一个swiperItem
         swiperInitCallback = function(item, index, array) {
@@ -88,7 +89,7 @@
      * touchmove
      */
     swiper.addEventListener('touchmove', function(e) {
-        if (!isSingleTouch(e)) {
+        if (!isSingleTouch(e) || Date.now() - currentSwiperTouchTime <= throttle) {
             return;
         }
         lastSwiperTouchPoint = currentSwiperTouchPoint;
