@@ -17,7 +17,7 @@
         <style>
             :root {
                 font-size: calc(100vw / 7.5);
-                --swiper-item-width: 3; /* 轮播图一个单元的宽度，单位 rem */
+                --swiper-item-width: 3; /* swiperItem的宽度，单位rem */
             }
 
             * {
@@ -37,7 +37,7 @@
                 left: 50%;
                 transform: translate3d(-50%, -50%, 0);
                 transform-style: preserve-3d;
-                perspective: calc(var(--swiper-item-width) * 3rem);
+                perspective: calc(var(--swiper-item-width) * 2rem);
             }
 
             .swiper-item {
@@ -45,121 +45,22 @@
                 width: calc(var(--swiper-item-width) * 1rem);
                 height: calc(var(--swiper-item-width) * 4rem / 5);
             }
+
+            .swiper-item::after {
+                content: '';
+                display: block;
+                position: absolute;
+                top: calc(100% + 0.1rem);
+                width: 100%;
+                height: 100%;
+                background-image: inherit;
+                opacity: 0.4;
+            }
         </style>
     </head>
     <body>
         <div class="swiper"></div>
-        <script src="https://cdn.staticfile.org/vConsole/3.3.4/vconsole.min.js"></script>
-        <script>
-            new VConsole();
-            (function(window, document) {
-                let swiperItemWidth =
-                    getComputedStyle(document.documentElement)
-                        .getPropertyValue('--swiper-item-width')
-                        .trim() - 0;
-                let swiper = document.querySelector('.swiper');
-                let swiperTouchstartPoint = null;
-                let swiperTouchendPoint = null;
-                let swiperItems = [
-                    {
-                        id: 0,
-                        bgColor: 'pink',
-                        deg: 0,
-                        isCurrent: false
-                    },
-                    {
-                        id: 1,
-                        bgColor: 'cyan',
-                        deg: 0,
-                        isCurrent: false
-                    },
-                    {
-                        id: 2,
-                        bgColor: 'skyblue',
-                        deg: 0,
-                        isCurrent: false
-                    },
-                    {
-                        id: 3,
-                        bgColor: 'hotpink',
-                        deg: 0,
-                        isCurrent: false
-                    },
-                    {
-                        id: 4,
-                        bgColor: 'lightgreen',
-                        deg: 0,
-                        isCurrent: false
-                    }
-                ];
-                let swiperItemTranslateZ = `calc(var(--swiper-item-width) * 1rem / ${2 *
-                    Math.sin((2 * Math.PI) / swiperItems.length)})`; // 轮播图单元的 translateZ，其值为正 n 边形外接圆的半径，n 为轮播图单元数量
-                let swiperItemGapDeg = 360 / swiperItems.length; // 相邻两个轮播图单元的 rotateY 之差
-                let halfSwiperItemGapDeg = swiperItemGapDeg / 2;
-                let swiperTransitionDuration = 0.3;
 
-                /* 初始化 */
-                swiperItems.forEach((item, index) => {
-                    let swiperItem = document.createElement('div');
-                    swiperItem.classList.add('swiper-item');
-                    swiperItem.style.backgroundColor = item.bgColor;
-
-                    item.deg = swiperItemGapDeg * index;
-                    item.isCurrent = index === 0;
-                    item.elem = swiperItem;
-                    swiper.appendChild(swiperItem);
-                });
-
-                animateSwiper(0, 0);
-
-                swiper.addEventListener('touchstart', function(e) {
-                    swiperTouchstartPoint = swiperTouchendPoint = e.targetTouches[0];
-                });
-
-                swiper.addEventListener('touchmove', function(e) {
-                    let deltaDeg = (e.targetTouches[0].pageX - swiperTouchendPoint.pageX) / 2;
-                    animateSwiper(deltaDeg, 0);
-                    swiperTouchendPoint = e.targetTouches[0];
-                });
-
-                swiper.addEventListener('touchend', function(e) {
-                    let deltaX = swiperTouchendPoint.pageX - swiperTouchstartPoint.pageX;
-                    let sample = swiperItems[0];
-                    let degFloor = Math.floor(sample.deg / swiperItemGapDeg) * swiperItemGapDeg;
-                    let degCeil = Math.ceil(sample.deg / swiperItemGapDeg) * swiperItemGapDeg;
-                    let degTarget = degCeil - sample.deg < sample.deg - degFloor ? degCeil : degFloor;
-                    animateSwiper(degTarget - sample.deg, 0.3);
-                });
-
-                /**
-                 * 轮播图动画
-                 * @param {Number} deltaDeg 轮播图要转过的角度
-                 * @param {Number} swiperTransitionDuration 动画持续时间 单位秒
-                 * @param {Function} callBack 回调函数，包含一个参数为当前的轮播图单元
-                 */
-                function animateSwiper(deltaDeg, swiperTransitionDuration, callBack = null) {
-                    let currentSwiperItem = null;
-
-                    swiperItems.forEach(item => {
-                        item.deg += deltaDeg;
-
-                        let degMod360 = item.deg % 360;
-                        item.isCurrent =
-                            degMod360 < halfSwiperItemGapDeg - 360 ||
-                            (degMod360 < halfSwiperItemGapDeg && degMod360 >= -halfSwiperItemGapDeg) ||
-                            degMod360 >= 360 - halfSwiperItemGapDeg;
-                        item.isCurrent && (currentSwiperItem = item);
-
-                        let style = item.elem.style;
-                        style.transform = `translateX(-50%) translateY(-50%) rotateY(${
-                            item.deg
-                        }deg) translateZ(${swiperItemTranslateZ}) rotateY(${-item.deg}deg)`;
-                        style.transitionDuration = `${swiperTransitionDuration}s`;
-                    });
-
-                    typeof callBack === 'function' && callBack(currentSwiperItem);
-                }
-            })(window, document);
-        </script>
+        <script src="./script.js"></script>
     </body>
 </html>
