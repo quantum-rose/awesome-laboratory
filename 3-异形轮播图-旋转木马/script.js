@@ -89,7 +89,7 @@
      * touchmove
      */
     swiper.addEventListener('touchmove', function(e) {
-        if (!isSingleTouch(e) || Date.now() - currentSwiperTouchTime <= throttle) {
+        if (!isSingleTouch(e) || Date.now() - currentSwiperTouchTime < throttle) {
             return;
         }
         lastSwiperTouchPoint = currentSwiperTouchPoint;
