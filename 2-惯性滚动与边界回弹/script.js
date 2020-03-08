@@ -124,6 +124,7 @@
      */
     function momentumRolling(cos, sin) {
         if (!isScrolling) {
+            scrollVelocity = 0;
             return;
         }
         lastTime = currentTime;
