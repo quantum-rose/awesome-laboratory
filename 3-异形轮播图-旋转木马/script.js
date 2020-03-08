@@ -129,7 +129,7 @@
      * @param {Element} swiperContainer swiper容器
      * @param {Function} callBack 回调函数，包含三个参数，同forEach，对于每一个swiperItem，回调函数都会执行一次
      */
-    function swiperInit(swiperContainer, callBack) {
+    function swiperInit(swiperContainer, callBack = null) {
         swiperItems.forEach((item, index, array) => {
             let swiperItem = document.createElement('div'),
                 style = swiperItem.style;
