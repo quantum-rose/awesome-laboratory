@@ -1,45 +1,8 @@
 (function(window, document) {
-    let _eleScrollLeft = document.querySelector('.scroll-left'),
-        _eleScrollTop = document.querySelector('.scroll-top'),
-        _eleScrollVelocity = document.querySelector('.scroll-velocity'),
-        _scrollLeft = 0,
-        _scrollTop = 0,
-        _scrollVelocity = 0;
-
-    Object.defineProperty(window, 'scrollLeft', {
-        get() {
-            return _scrollLeft;
-        },
-        set(val) {
-            _eleScrollLeft.innerHTML = 'scrollLeft: ' + val;
-            _scrollLeft = val;
-        }
-    });
-
-    Object.defineProperty(window, 'scrollTop', {
-        get() {
-            return _scrollTop;
-        },
-        set(val) {
-            _eleScrollTop.innerHTML = 'scrollTop: ' + val;
-            _scrollTop = val;
-        }
-    });
-
-    Object.defineProperty(window, 'scrollVelocity', {
-        get() {
-            return _scrollVelocity;
-        },
-        set(val) {
-            _eleScrollVelocity.innerHTML = 'velocity: ' + val;
-            _scrollVelocity = val;
-        }
-    });
-
     /**
      * config 自定义配置
      */
-    let a = 40, // 滚动时的加速度，总是与滚动方向相反，单位px/(s^2)
+    let acceleration = 2400, // 滚动时的加速度，总是与滚动方向相反，单位px/(s^2)
         throttle = 1000 / 60, // 节流延迟时间，用于控制touchmove事件的触发频率，单位ms
         momentumLimitTime = 300, // 符合惯性拖动的最大时间，单位ms
         momentumLimitDistance = 15; // 符合惯性拖动的最小拖动距离，单位px
@@ -55,7 +18,12 @@
         currentPoint = null, // 当前触点
         lastTime = 0, // 上一个触点的时间戳
         currentTime = 0, // 当前触点的时间戳
-        isScrolling = false; // 是否正在滚动的标识
+        isScrolling = false, // 是否正在滚动的标识
+        scrollLeft = 0, // 滚动主体的translateX
+        scrollTop = 0, // 滚动主体的translateY
+        scrollSpeed = 0, // 滚动速度，标量，单位px/s
+        scrollDirectionCos = 0, // 滚动方向与x轴正方向夹角的余弦
+        scrollDirectionSin = 0; // 滚动方向与x轴正方向夹角的正弦
 
     /**
      * touchstart
@@ -74,8 +42,6 @@
      * touchmove
      */
     myScroll.addEventListener('touchmove', function(e) {
-        e.preventDefault();
-
         if (!isSingleTouch(e) || Date.now() - currentTime < throttle) {
             return;
         }
@@ -108,46 +74,44 @@
         }
         let deltaX = currentPoint.pageX - lastPoint.pageX,
             deltaY = currentPoint.pageY - lastPoint.pageY,
-            deltaDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY),
-            cos = deltaX / deltaDistance,
-            sin = deltaY / deltaDistance;
+            deltaDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
-        scrollVelocity = deltaDistance / ((currentTime - lastTime) / 1000);
+        scrollSpeed = deltaDistance / ((currentTime - lastTime) / 1000);
+        scrollDirectionCos = deltaX / deltaDistance;
+        scrollDirectionSin = deltaY / deltaDistance;
         isScrolling = true;
-        momentumRolling(cos, sin);
+        momentumScroll();
     });
 
     /**
      * 惯性滚动动画
-     * @param {Number} cos 滑动方向与x轴正方向夹角的余弦
-     * @param {Number} sin 滑动方向与x轴正方向夹角的正弦
      */
-    function momentumRolling(cos, sin) {
+    function momentumScroll() {
         if (!isScrolling) {
-            scrollVelocity = 0;
+            scrollSpeed = 0;
             return;
         }
         lastTime = currentTime;
         currentTime = Date.now();
         let t = (currentTime - lastTime) / 1000;
-        let v = scrollVelocity - a;
+        let v = scrollSpeed - acceleration * t;
 
         if (v <= 0) {
-            scrollVelocity = 0;
+            scrollSpeed = 0;
             isScrolling = false;
             return;
         } else if (v > 4000) {
-            scrollVelocity = 4000;
+            scrollSpeed = 4000;
         } else {
-            scrollVelocity = v;
+            scrollSpeed = v;
         }
 
-        let d = scrollVelocity * t - 0.5 * a * t * t;
-        scrollLeft += cos * d;
-        scrollTop += sin * d;
+        let d = scrollSpeed * t - 0.5 * acceleration * t * t;
+        scrollLeft += scrollDirectionCos * d;
+        scrollTop += scrollDirectionSin * d;
         scrollTo(scrollLeft, scrollTop);
 
-        requestAnimationFrame(momentumRolling.bind(this, cos, sin));
+        requestAnimationFrame(momentumScroll);
     }
 
     /**
