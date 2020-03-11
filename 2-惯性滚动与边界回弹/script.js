@@ -62,19 +62,17 @@
     myScroll.addEventListener('touchend', function(e) {
         if (
             !isSingleTouch(e) ||
-            Math.sqrt(
-                (e.changedTouches[0].pageX - touchstartPoint.pageX) *
-                    (e.changedTouches[0].pageX - touchstartPoint.pageX) +
-                    (e.changedTouches[0].pageY - touchstartPoint.pageY) *
-                        (e.changedTouches[0].pageY - touchstartPoint.pageY)
-            ) < momentumLimitDistance ||
+            ((e.changedTouches[0].pageX - touchstartPoint.pageX) ** 2 +
+                (e.changedTouches[0].pageY - touchstartPoint.pageY) ** 2) **
+                0.5 <
+                momentumLimitDistance ||
             Date.now() - touchstartTime > momentumLimitTime
         ) {
             return;
         }
         let deltaX = currentPoint.pageX - lastPoint.pageX,
             deltaY = currentPoint.pageY - lastPoint.pageY,
-            deltaDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            deltaDistance = (deltaX ** 2 + deltaY ** 2) ** 0.5;
 
         scrollSpeed = deltaDistance / ((currentTime - lastTime) / 1000);
         scrollDirectionCos = deltaX / deltaDistance;
