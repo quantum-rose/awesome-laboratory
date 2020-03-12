@@ -21,6 +21,24 @@ body {
     width: 100%;
     background-color: skyblue;
     transform: translate3d(0, 0, 0);
+    transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.my-scroll > div {
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+}
+
+.my-scroll > div::before {
+    content: attr(data-index);
+    float: left;
+}
+
+.my-scroll > div::after {
+    content: attr(data-index);
+    float: right;
 }
 
 .scroll-left,
@@ -37,4 +55,31 @@ body {
 
 .scroll-velocity {
     top: 3em;
+}
+
+.tools-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.toggle {
+    float: right;
+    padding-right: 15px;
+    color: #fff;
+    text-decoration: none;
+}
+
+.lock {
+    float: left;
+    padding-left: 15px;
+}
+
+.lock > input[type='checkbox'] {
+    vertical-align: middle;
 }

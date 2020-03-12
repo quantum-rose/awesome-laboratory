@@ -1,0 +1,9 @@
+(function(window, document) {
+    let scroll = document.querySelector('.my-scroll');
+    for (let i = 0; i < 100; i++) {
+        let div = document.createElement('div');
+        div.style.backgroundColor = `hsla(${i * 3.6}, 100%, 50%, 1)`;
+        div.innerText = div.dataset.index = i;
+        scroll.appendChild(div);
+    }
+})(window, document);

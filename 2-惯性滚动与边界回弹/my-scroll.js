@@ -1,4 +1,6 @@
 (function(window, document) {
+    let lockedX; // 是否锁定横向移动
+    initToolsBar();
     /**
      * config 自定义配置
      */
@@ -18,7 +20,6 @@
         currentPoint = null, // 当前触点
         lastTime = 0, // 上一个触点的时间戳
         currentTime = 0, // 当前触点的时间戳
-        isScrolling = false, // 是否正在滚动的标识
         scrollLeft = 0, // 滚动主体的translateX
         scrollTop = 0, // 滚动主体的translateY
         scrollSpeed = 0, // 滚动速度，标量，单位px/s
@@ -32,7 +33,8 @@
         if (!isSingleTouch(e)) {
             return;
         }
-        isScrolling = false;
+        let transformNumber = getComputedStyle(myScroll).transform.match(/-?\d+(\.\d+)?/g);
+        myScrollTo(transformNumber[4], transformNumber[5], 0);
 
         touchstartPoint = lastPoint = currentPoint = e.targetTouches[0];
         touchstartTime = lastTime = currentTime = Date.now();
@@ -53,7 +55,7 @@
 
         scrollLeft += currentPoint.pageX - lastPoint.pageX;
         scrollTop += currentPoint.pageY - lastPoint.pageY;
-        scrollTo(scrollLeft, scrollTop);
+        myScrollTo(scrollLeft, scrollTop, 0);
     });
 
     /**
@@ -75,9 +77,9 @@
             deltaDistance = (deltaX ** 2 + deltaY ** 2) ** 0.5;
 
         scrollSpeed = deltaDistance / ((currentTime - lastTime) / 1000);
+        scrollSpeed > 4000 && (scrollSpeed = 4000);
         scrollDirectionCos = deltaX / deltaDistance;
         scrollDirectionSin = deltaY / deltaDistance;
-        isScrolling = true;
         momentumScroll();
     });
 
@@ -85,40 +87,23 @@
      * 惯性滚动动画
      */
     function momentumScroll() {
-        if (!isScrolling) {
-            scrollSpeed = 0;
-            return;
-        }
-        lastTime = currentTime;
-        currentTime = Date.now();
-        let t = (currentTime - lastTime) / 1000;
-        let v = scrollSpeed - acceleration * t;
+        let d = scrollSpeed ** 2 / (2 * acceleration);
 
-        if (v <= 0) {
-            scrollSpeed = 0;
-            isScrolling = false;
-            return;
-        } else if (v > 4000) {
-            scrollSpeed = 4000;
-        } else {
-            scrollSpeed = v;
-        }
-
-        let d = scrollSpeed * t - 0.5 * acceleration * t * t;
+        let transitionDuration = scrollSpeed / acceleration;
         scrollLeft += scrollDirectionCos * d;
         scrollTop += scrollDirectionSin * d;
-        scrollTo(scrollLeft, scrollTop);
-
-        requestAnimationFrame(momentumScroll);
+        myScrollTo(scrollLeft, scrollTop, transitionDuration);
     }
 
     /**
      * 滚动到指定位置
      * @param {Number} scrollLeft
      * @param {Number} scrollTop
+     * @param {Number} transitionDuration
      */
-    function scrollTo(scrollLeft, scrollTop) {
-        myScroll.style.transform = `translate3d(${scrollLeft}px, ${scrollTop}px, 0)`;
+    function myScrollTo(scrollLeft, scrollTop, transitionDuration) {
+        myScroll.style.transitionDuration = `${transitionDuration}s`;
+        myScroll.style.transform = `translate3d(${lockedX ? (scrollLeft = 0) : scrollLeft}px, ${scrollTop}px, 0)`;
     }
 
     /**
@@ -153,5 +138,14 @@
             }
         }
         return false;
+    }
+
+    function initToolsBar() {
+        let lockX = document.getElementById('lock-x');
+        lockedX = lockX.checked;
+        lockX.addEventListener('input', function(e) {
+            lockedX = e.target.checked;
+            myScrollTo((scrollLeft = 0), scrollTop, 0.3);
+        });
     }
 })(window, document);
