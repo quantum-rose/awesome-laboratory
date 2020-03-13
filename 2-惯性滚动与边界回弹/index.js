@@ -1,6 +1,7 @@
 (function(window, document) {
     let lockedX; // 是否锁定横向移动
     initToolsBar();
+
     /**
      * config 自定义配置
      */
@@ -101,9 +102,8 @@
             scrollSpeed = 0;
             isScrolling = false;
             return;
-        } else {
-            scrollSpeed = v;
         }
+        scrollSpeed = v;
 
         let d = scrollSpeed * t - 0.5 * acceleration * t * t;
         scrollLeft += scrollDirectionCos * d;

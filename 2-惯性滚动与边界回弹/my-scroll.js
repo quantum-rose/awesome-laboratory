@@ -1,6 +1,7 @@
 (function(window, document) {
     let lockedX; // 是否锁定横向移动
     initToolsBar();
+
     /**
      * config 自定义配置
      */
@@ -20,6 +21,7 @@
         currentPoint = null, // 当前触点
         lastTime = 0, // 上一个触点的时间戳
         currentTime = 0, // 当前触点的时间戳
+        isScrolling = false, // 是否正在滚动的标识
         scrollLeft = 0, // 滚动主体的translateX
         scrollTop = 0, // 滚动主体的translateY
         scrollSpeed = 0, // 滚动速度，标量，单位px/s
@@ -33,8 +35,11 @@
         if (!isSingleTouch(e)) {
             return;
         }
-        let transformNumber = getComputedStyle(myScroll).transform.match(/-?\d+(\.\d+)?/g);
-        myScrollTo(transformNumber[4], transformNumber[5], 0);
+
+        if (isScrolling) {
+            let transformNumber = getComputedStyle(myScroll).transform.match(/-?\d+(\.\d+)?/g);
+            myScrollTo((scrollLeft = transformNumber[4] - 0), (scrollTop = transformNumber[5] - 0), 0);
+        }
 
         touchstartPoint = lastPoint = currentPoint = e.targetTouches[0];
         touchstartTime = lastTime = currentTime = Date.now();
@@ -84,12 +89,20 @@
     });
 
     /**
+     * transitionend
+     */
+    myScroll.addEventListener('transitionend', function(e) {
+        isScrolling = false;
+        scrollSpeed = 0;
+        myScroll.style.transitionDuration = '0s';
+    });
+
+    /**
      * 惯性滚动动画
      */
     function momentumScroll() {
-        let d = scrollSpeed ** 2 / (2 * acceleration);
-
-        let transitionDuration = scrollSpeed / acceleration;
+        let d = scrollSpeed ** 2 / (2 * acceleration),
+            transitionDuration = scrollSpeed / acceleration;
         scrollLeft += scrollDirectionCos * d;
         scrollTop += scrollDirectionSin * d;
         myScrollTo(scrollLeft, scrollTop, transitionDuration);
@@ -102,6 +115,7 @@
      * @param {Number} transitionDuration
      */
     function myScrollTo(scrollLeft, scrollTop, transitionDuration) {
+        isScrolling = transitionDuration !== 0;
         myScroll.style.transitionDuration = `${transitionDuration}s`;
         myScroll.style.transform = `translate3d(${lockedX ? (scrollLeft = 0) : scrollLeft}px, ${scrollTop}px, 0)`;
     }
