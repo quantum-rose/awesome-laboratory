@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>流动的线条边框</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+            }
+
+            html,
+            body {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                touch-action: none;
+            }
+
+            .box {
+                /* 配置项 */
+                --duration: 0.2s; /* 4条边过渡总时长 */
+                --width: 300px; /* content宽度 */
+                --height: 200px; /* content高度 */
+                --aspect-ratio: calc(200 / 300); /* 宽高比 */
+                --border-width: 3px; /* 边框宽度 */
+                --border-radius: 20px; /* 圆角半径 */
+
+                /* 自动计算 */
+                --box-width: calc(var(--width) + 2 * var(--border-width)); /* box宽度 */
+                --box-height: calc(var(--height) + 2 * var(--border-width)); /* box高度 */
+                --width-duration: calc(var(--duration) / (var(--aspect-ratio) * 2 + 2)); /* 边框横向过渡时间 */
+                --height-duration: calc(var(--width-duration) * var(--aspect-ratio)); /* 边框纵向过渡时间 */
+                --delay-third: calc(var(--width-duration) + var(--height-duration)); /* 第三条边的过渡延迟时间 */
+                --delay-in-fourth: calc(
+                    var(--width-duration) * 2 + var(--height-duration)
+                ); /* 进入动画最后一条边的过渡延迟时间 */
+                --delay-out-fourth: calc(
+                    var(--width-duration) + var(--height-duration) * 2
+                ); /* 离开动画最后一条边的过渡延迟时间 */
+
+                position: relative;
+                display: flex;
+                margin: auto;
+                width: var(--box-width);
+                height: var(--box-height);
+                line-height: var(--box-height);
+                text-align: center;
+                border-radius: var(--border-radius);
+                background-color: #42b983;
+                cursor: pointer;
+            }
+
+            .box > .content {
+                z-index: 1;
+                position: absolute;
+                top: var(--border-width);
+                left: var(--border-width);
+                width: var(--width);
+                height: var(--height);
+                border-radius: calc(var(--border-radius) - var(--border-width));
+                background-color: #eee;
+            }
+
+            .box::before,
+            .box::after {
+                content: '';
+                display: block;
+                position: absolute;
+                background-color: white;
+            }
+
+            .box::before {
+                top: 0;
+                left: 0;
+                width: var(--box-width);
+                height: var(--box-height);
+                border-top-right-radius: 50%;
+                transition: width var(--width-duration) linear var(--delay-out-fourth),
+                    height var(--height-duration) linear var(--delay-third),
+                    border-radius var(--width-duration) linear var(--delay-out-fourth);
+            }
+
+            .box::after {
+                right: 0;
+                bottom: var(--border-width);
+                width: calc(var(--box-width) - var(--border-width));
+                height: calc(var(--box-height) - var(--border-width));
+                border-bottom-left-radius: 50%;
+                transition: width var(--width-duration) linear var(--height-duration),
+                    height var(--height-duration) linear 0s,
+                    border-radius var(--width-duration) linear var(--height-duration);
+            }
+
+            .box:hover::before {
+                width: calc(var(--border-radius) + var(--border-width));
+                height: 0;
+                border-top-right-radius: 0;
+                transition: width var(--width-duration) linear 0s,
+                    height var(--height-duration) linear var(--width-duration),
+                    border-radius var(--width-duration) linear 0s;
+            }
+
+            .box:hover::after {
+                width: calc(var(--border-radius) + var(--border-width));
+                height: 0;
+                border-bottom-left-radius: 0;
+                transition: width var(--width-duration) linear var(--delay-third),
+                    height var(--height-duration) linear var(--delay-in-fourth),
+                    border-radius var(--width-duration) linear var(--delay-third);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="box">
+            <div class="content">
+                鼠标hover看效果
+            </div>
+        </div>
+    </body>
+</html>
