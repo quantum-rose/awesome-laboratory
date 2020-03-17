@@ -17,7 +17,6 @@
         <style>
             :root {
                 font-size: calc(100vw / 7.5);
-                --swiper-item-width: 3; /* swiperItem的宽度，单位rem */
             }
 
             * {
@@ -33,18 +32,21 @@
             }
 
             .swiper {
+                --swiper-item-width: 3rem; /* swiperItem的宽度 */
+                --swiper-item-height: 2.4rem; /* swiperItem的宽度 */
+
                 position: absolute;
                 top: 50%;
                 left: 50%;
                 transform: translate3d(-50%, -50%, 0);
                 transform-style: preserve-3d;
-                perspective: calc(var(--swiper-item-width) * 2rem);
+                perspective: calc(var(--swiper-item-width) * 2);
             }
 
             .swiper-item {
                 position: absolute;
-                width: calc(var(--swiper-item-width) * 1rem);
-                height: calc(var(--swiper-item-width) * 4rem / 5);
+                width: var(--swiper-item-width);
+                height: var(--swiper-item-height);
             }
 
             .swiper-item::after {

@@ -93,8 +93,6 @@
      */
     myScroll.addEventListener('transitionend', function(e) {
         isScrolling = false;
-        scrollSpeed = 0;
-        myScroll.style.transitionDuration = '0s';
     });
 
     /**

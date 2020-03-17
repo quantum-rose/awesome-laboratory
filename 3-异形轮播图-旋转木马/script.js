@@ -67,8 +67,7 @@
         currentSwiperTouchPoint = null, // 当前的触点
         lastSwiperTouchTime = 0, // 上一次触点的时间戳
         currentSwiperTouchTime = 0, // 当前触点的时间戳
-        swiperItemTranslateZ = `calc(var(--swiper-item-width) * 1rem / ${2 *
-            Math.sin((2 * Math.PI) / swiperItems.length)})`, // swiperItem的translateZ，等于边长为swiperItem宽度的正n边形外接圆的半径，n为swiperItem的数量
+        swiperItemTranslateZ = `calc(var(--swiper-item-width) / ${2 * Math.sin((2 * Math.PI) / swiperItems.length)})`, // swiperItem的translateZ，等于边长为swiperItem宽度的正n边形外接圆的半径，n为swiperItem的数量
         swiperItemGapDeg = 360 / swiperItems.length, // 相邻两个swiperItem的rotateY之差，等于360除以swiperItem的数量
         halfSwiperItemGapDeg = swiperItemGapDeg / 2; // rotateY之差的一半
 
