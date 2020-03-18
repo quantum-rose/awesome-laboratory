@@ -9,21 +9,21 @@ body {
     touch-action: none;
 }
 
-.page {
+.my-scroll {
     position: absolute;
     width: 100%;
     height: 100%;
-    background-color: ccc;
+    background-color: #eee;
     overflow: hidden;
 }
 
-.my-scroll {
+.my-scroll-content {
     width: 100%;
     transform: translate3d(0, 0, 0);
     transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.my-scroll > div {
+.my-scroll-content > div {
     width: 100%;
     height: 50px;
     line-height: 50px;
@@ -34,32 +34,16 @@ body {
     text-shadow: 0 0 4px #000;
 }
 
-.my-scroll > div::before {
+.my-scroll-content > div::before {
     content: attr(data-index);
     float: left;
     margin-left: 8px;
 }
 
-.my-scroll > div::after {
+.my-scroll-content > div::after {
     content: attr(data-index);
     float: right;
     margin-right: 8px;
-}
-
-.scroll-left,
-.scroll-top,
-.scroll-velocity {
-    position: absolute;
-    left: 0;
-    color: red;
-}
-
-.scroll-top {
-    top: 1.5em;
-}
-
-.scroll-velocity {
-    top: 3em;
 }
 
 .tools-bar {

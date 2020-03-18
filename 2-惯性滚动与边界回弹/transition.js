@@ -14,6 +14,7 @@
      * 程序运行所必要的数据
      */
     let myScroll = document.querySelector('.my-scroll'),
+        myScrollContent = myScroll.firstElementChild,
         touchIdentifier = null, // touch事件中触点的唯一标识，用于禁用多点触控
         touchstartTime = 0, // 触摸开始的时间
         touchstartPoint = null, // 触摸开始的触点
@@ -37,7 +38,7 @@
         }
 
         if (isScrolling) {
-            let transformNumber = getComputedStyle(myScroll).transform.match(/-?\d+(\.\d+)?/g);
+            let transformNumber = getComputedStyle(myScrollContent).transform.match(/-?\d+(\.\d+)?/g);
             myScrollTo((scrollLeft = transformNumber[4] - 0), (scrollTop = transformNumber[5] - 0), 0);
         }
 
@@ -114,8 +115,10 @@
      */
     function myScrollTo(scrollLeft, scrollTop, transitionDuration) {
         isScrolling = transitionDuration !== 0;
-        myScroll.style.transitionDuration = `${transitionDuration}s`;
-        myScroll.style.transform = `translate3d(${lockedX ? (scrollLeft = 0) : scrollLeft}px, ${scrollTop}px, 0)`;
+        myScrollContent.style.transitionDuration = `${transitionDuration}s`;
+        myScrollContent.style.transform = `translate3d(${
+            lockedX ? (scrollLeft = 0) : scrollLeft
+        }px, ${scrollTop}px, 0)`;
     }
 
     /**
