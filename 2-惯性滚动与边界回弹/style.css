@@ -19,7 +19,9 @@ body {
 
 .my-scroll-content {
     width: 100%;
+    -webkit-transform: translate3d(0, 0, 0);
     transform: translate3d(0, 0, 0);
+    -webkit-transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
     transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
 }
 

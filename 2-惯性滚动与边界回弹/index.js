@@ -1,4 +1,4 @@
-(function(window, document) {
+(function (window, document) {
     let lockedX; // 是否锁定横向移动
     initToolsBar();
 
@@ -9,7 +9,7 @@
         throttle = 1000 / 60, // 节流延迟时间，用于控制touchmove事件的触发频率，单位ms
         momentumLimitTime = 300, // 符合惯性拖动的最大时间，单位ms
         momentumLimitDistance = 15, // 符合惯性拖动的最小拖动距离，单位px
-        elasticConst = 0.2; // 弹性系数，值越大回弹越快
+        elasticConst = 200; // 弹性系数，值越大回弹越快
 
     /**
      * 程序运行所必要的数据
@@ -38,7 +38,7 @@
     /**
      * touchstart
      */
-    myScroll.addEventListener('touchstart', function(e) {
+    myScroll.addEventListener('touchstart', function (e) {
         if (!isSingleTouch(e)) {
             return;
         }
@@ -51,7 +51,7 @@
     /**
      * touchmove
      */
-    myScroll.addEventListener('touchmove', function(e) {
+    myScroll.addEventListener('touchmove', function (e) {
         if (!isSingleTouch(e) || Date.now() - currentTime < throttle) {
             return;
         }
@@ -87,13 +87,10 @@
     /**
      * touchend
      */
-    myScroll.addEventListener('touchend', function(e) {
+    myScroll.addEventListener('touchend', function (e) {
         if (!isSingleTouch(e)) {
             return;
         }
-
-        lastTime = currentTime;
-        currentTime = Date.now();
 
         overTop = scrollTop;
         overBottom = offsetHeight - scrollHeight - scrollTop;
@@ -102,6 +99,8 @@
          * 条件成立优先执行回弹动画
          */
         if (lockedX && (overTop > 0 || overBottom > 0)) {
+            lastTime = currentTime;
+            currentTime = Date.now();
             scrollSpeed = 0;
             bounceDirection = overTop > 0 ? 1 : -1;
 
@@ -177,7 +176,7 @@
         currentTime = Date.now();
         let t = (currentTime - lastTime) / 1000,
             overHeight = Math.max(overTop, overBottom),
-            a = acceleration * overHeight * elasticConst; // 加速度，与此时的回弹距离成正比
+            a = overHeight * elasticConst; // 加速度，与此时的回弹距离成正比
         scrollSpeed -= a * t;
         scrollTop += bounceDirection * (scrollSpeed * t - 0.5 * a * t ** 2);
 
@@ -245,7 +244,7 @@
     function initToolsBar() {
         let lockX = document.getElementById('lock-x');
         lockedX = lockX.checked;
-        lockX.addEventListener('input', function(e) {
+        lockX.addEventListener('input', function (e) {
             if ((lockedX = e.target.checked)) {
                 scrollTop = overBottom > 0 ? offsetHeight - scrollHeight : 0;
             }
